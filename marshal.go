@@ -119,7 +119,16 @@ func (s *SessionDescription) Marshal() ([]byte, error) {
 			m.addKeyValue("a=", a.marshalInto)
 		}
 	}
-
+	if s.SSRC != "" {
+		m.addKeyValue("y=", func(b []byte) []byte {
+			return append(b, s.SSRC...)
+		})
+	}
+	if s.Format != nil {
+		m.addKeyValue("f=", func(b []byte) []byte {
+			return append(b, s.Format.String()...)
+		})
+	}
 	return m, nil
 }
 

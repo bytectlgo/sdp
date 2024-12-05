@@ -67,6 +67,10 @@ type SessionDescription struct {
 
 	// https://tools.ietf.org/html/rfc4566#section-5.14
 	MediaDescriptions []*MediaDescription
+
+	// gb28181
+	SSRC   string   // ssrc for the session  "y=123456"
+	Format *CodecGB //  音频参数描述: f=v/编码格式/分辨率/帧率/码率类型/码率大小a/编码格式/码率大小/采样率   "f=v/////a/1/8/1"
 }
 
 // Attribute returns the value of an attribute and if it exists

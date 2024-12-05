@@ -122,6 +122,7 @@ func (s *SessionDescription) UnmarshalString(value string) error {
 
 	for state := s1; state != nil; {
 		var err error
+		// fmt.Printf("state: %v\r\n", runtime.FuncForPC(reflect.ValueOf(state).Pointer()).Name())
 		state, err = state(l)
 		if err != nil {
 			return err
@@ -315,6 +316,10 @@ func s12(l *lexer) (stateFn, error) {
 			return unmarshalMediaTitle
 		case 'm':
 			return unmarshalMediaDescription
+		case 'y':
+			return unmarshalSSRC
+		case 'f':
+			return unmarshalCodecGB
 		}
 		return nil
 	})
@@ -353,6 +358,10 @@ func s14(l *lexer) (stateFn, error) {
 			return unmarshalMediaTitle
 		case 'm':
 			return unmarshalMediaDescription
+		case 'y':
+			return unmarshalSSRC
+		case 'f':
+			return unmarshalCodecGB
 		}
 		return nil
 	})
@@ -398,6 +407,24 @@ func s16(l *lexer) (stateFn, error) {
 		}
 		return nil
 	})
+}
+
+func unmarshalSSRC(l *lexer) (stateFn, error) {
+	ssrc, err := l.readField()
+	if err != nil {
+		return nil, err
+	}
+	l.desc.SSRC = ssrc
+	return s14, nil
+}
+
+func unmarshalCodecGB(l *lexer) (stateFn, error) {
+	format, err := l.readField()
+	if err != nil {
+		return nil, err
+	}
+	l.desc.Format = ParseCodecGB(format)
+	return s14, nil
 }
 
 func unmarshalProtocolVersion(l *lexer) (stateFn, error) {
